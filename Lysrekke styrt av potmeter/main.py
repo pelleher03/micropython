@@ -1,51 +1,32 @@
-import time
 from machine import Pin, ADC
+from myservo import myServo
+import time
 
-potentiometer = ADC(Pin(36))
-potentiometer.atten(ADC.ATTN_11DB)
-pins = [15, 2, 0, 4, 5, 18, 19, 21, 22, 23]
+degree = 0
 
-def show_leds(pot_val):
-    if pot_val > 0:
-        led = Pin(pins[0], Pin.OUT)
-        led.value(1)
-    if pot_val > 410:
-        led = Pin(pins[1], Pin.OUT)
-        led.value(1)
-    if pot_val > 820:
-        led = Pin(pins[2], Pin.OUT)
-        led.value(1)
-    if pot_val > 1230:
-        led = Pin(pins[3], Pin.OUT)
-        led.value(1)
-    if pot_val > 1640:
-        led = Pin(pins[4], Pin.OUT)
-        led.value(1)
-    if pot_val > 2050:
-        led = Pin(pins[5], Pin.OUT)
-        led.value(1)
-    if pot_val > 2460:
-        led = Pin(pins[6], Pin.OUT)
-        led.value(1)
-    if pot_val > 2870:
-        led = Pin(pins[7], Pin.OUT)
-        led.value(1)
-    if pot_val > 3280:
-        led = Pin(pins[8], Pin.OUT)
-        led.value(1)
-    if pot_val > 3690:
-        led = Pin(pins[9], Pin.OUT)
-        led.value(1)
-        
-def reset_pins():
-    for pin in pins:
-        led = Pin(pin, Pin.OUT)
-        led.value(0)
-        
-        
+servo = myServo(15)
+servo.myServoWriteAngle(degree)
+time.sleep_ms(1000)
+
+xVal = ADC(Pin(36))
+yVal = ADC(Pin(39))
+zVal = Pin(14, Pin.IN, Pin.PULL_UP)
+
+xVal.atten(ADC.ATTN_11DB)
+yVal.atten(ADC.ATTN_11DB)
+xVal.width(ADC.WIDTH_12BIT)
+yVal.width(ADC.WIDTH_12BIT)
+
 while True:
-    reset_pins()
-    potentiometer_value = potentiometer.read()
-    print(potentiometer_value)
-    show_leds(potentiometer_value)
+    servo.myServoWriteAngle(degree)
+    print('X,Y,Z:', xVal.read(), ',', yVal.read(), ',', zVal.value())
+    print(degree)
+    x = xVal.read()
+    time.sleep(0.1)
+    if x > 3500:
+        degree = degree + 5
+    elif x < 600:
+        degree = degree - 5
+        
+    
         
